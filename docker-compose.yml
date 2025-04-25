@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: linkding
+      POSTGRES_USER: ${POSTGRES_USER} # read from .env 
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # read from .env 
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - linkding_network
+
+  linkding:
+    image: sissbruecker/linkding:latest
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - LD_DB_ENGINE=postgres
+      - LD_DB_HOST=db
+      - LD_DB_PORT=5432
+      - LD_DB_NAME=linkding
+      - LD_DB_USER=${POSTGRES_USER} # read from .env 
+      - LD_DB_PASSWORD=${POSTGRES_PASSWORD} # read from .env 
+      - LD_HOSTNAME=https://bookmarks.mischa.cloud
+    volumes:
+      - ld-data:/etc/linkding
+    networks:
+      - linkding_network
+
+  caddy:
+    image: caddy:latest # :latest oder :2
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # For HTTP/3
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile # Caddy configuration 
+      - caddy_data:/data                      # For certifcates and so..
+      - caddy_config:/config                  # For Caddy's internal configuration
+    networks:
+      - linkding_network
+    depends_on:
+      - linkding
+
+networks:
+  linkding_network:
+    driver: bridge
+    enable_ipv6: false 
+
+volumes:
+  db-data:
+  ld-data:
+  caddy_data:
+  caddy_config:

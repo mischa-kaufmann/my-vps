@@ -1,0 +1,3 @@
+bookmarks.mischa.cloud {
+  reverse_proxy linkding:9090
+}
