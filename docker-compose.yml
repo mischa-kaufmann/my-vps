@@ -47,6 +47,15 @@ services:
     depends_on:
       - linkding
 
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: my-vps-uptime-kuma
+    restart: always
+    volumes:
+      - uptime-kuma-data:/app/data
+    networks:
+      - linkding_network
+
 networks:
   linkding_network:
     driver: bridge
@@ -57,3 +66,4 @@ volumes:
   ld-data:
   caddy_data:
   caddy_config:
+  uptime-kuma-data:

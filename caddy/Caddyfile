@@ -1,3 +1,8 @@
 bookmarks.mischa.cloud {
   reverse_proxy linkding:9090
 }
+
+# Uptime Kuma
+status.mischa.cloud {
+  reverse_proxy uptime-kuma:3001
+}
