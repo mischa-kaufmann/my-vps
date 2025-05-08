@@ -20,10 +20,10 @@ status.mischa.cloud {
 # Netdata
 
 netdata.mischa.cloud {
-  reverse_proxy localhost:19999 
+  reverse_proxy netdata:19999 
 
-  basicauth {
-  {$NETDATA_USERNAME} {$NETDATA_PASSWORD_HASH}
+  basic_auth {
+    {$NETDATA_USERNAME} {$NETDATA_PASSWORD_HASH}
    }
 }
 

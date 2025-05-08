@@ -47,6 +47,9 @@ services:
       - linkding_network
     depends_on:
       - linkding
+    environment:
+      - NETDATA_USERNAME=${NETDATA_USERNAME}
+      - NETDATA_PASSWORD_HASH=${NETDATA_PASSWORD_HASH}
 
   uptime-kuma:
     image: louislam/uptime-kuma:latest
