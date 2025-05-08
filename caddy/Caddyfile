@@ -1,8 +1,29 @@
+#===============
+# My CaddyFile
+#===============
+
+# -------------
+# Linkding bookmarks
+
 bookmarks.mischa.cloud {
   reverse_proxy linkding:9090
 }
 
+# -------------
 # Uptime Kuma
+
 status.mischa.cloud {
   reverse_proxy uptime-kuma:3001
 }
+
+# -------------
+# Netdata
+
+netdata.mischa.cloud {
+  reverse_proxy localhost:19999 
+
+  basicauth {
+  {$NETDATA_USERNAME} {$NETDATA_PASSWORD_HASH}
+   }
+}
+

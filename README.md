@@ -108,6 +108,4 @@ Feel free to open an issue if you find a bug or have a suggestion. Pull requests
 
 ## License
 
-This project is licensed under the MIT License - see the [https://www.google.com/search?q=LICENSE](https://www.google.com/search?q=LICENSE) file for details.
-    
-    
+This project is licensed under the MIT License
