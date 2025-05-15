@@ -27,3 +27,8 @@ netdata.mischa.cloud {
    }
 }
 
+#--------------
+# SaxoRooster
+saxorooster.mischa.cloud {
+  reverse_proxy saxorooster:80
+}

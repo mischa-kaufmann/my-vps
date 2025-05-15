@@ -82,6 +82,13 @@ services:
     networks:
       - linkding_network
 
+  saxorooster:
+    image: mischakaufmann/saxorooster-game:0.1.0 
+    container_name: saxorooster-app 
+    restart: unless-stopped
+    networks:
+      - linkding_network
+
 networks:
   linkding_network:
     driver: bridge
