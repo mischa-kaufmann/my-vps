@@ -1,0 +1,113 @@
+---
+- name: Configure VPS and Deploy Docker Stack
+  hosts: my-vps
+  become: true
+  gather_facts: true
+  vars:
+    vps_project_git_url: 'https://github.com/mischa-kaufmann/my-vps.git'
+    vps_postgres_user: 'linkding'
+    vps_netdata_username: 'admin_mischa'
+    vps_timezone: 'Europe/Zurich'
+  vars_files:
+    - vars/secrets.yml 
+
+  tasks:
+    - name: Update apt cache and install common dependencies
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - software-properties-common
+        state: present
+        update_cache: yes
+
+    - name: Create directory for Docker GPG key
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker GPG key to a temporary file
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /tmp/docker_gpg_key
+        mode: '0644'
+
+    - name: Dearmor Docker GPG key
+      ansible.builtin.command:
+        cmd: gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker_gpg_key
+        creates: /etc/apt/keyrings/docker.gpg
+
+    - name: Ensure Docker GPG key has correct permissions
+      ansible.builtin.file:
+        path: /etc/apt/keyrings/docker.gpg
+        mode: '0644'
+
+    - name: Add Docker repository to APT sources
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
+        state: present
+        filename: docker
+        update_cache: yes
+
+    - name: Install Docker Engine, CLI, Containerd, and Docker Compose plugin
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Ensure Docker service is started and enabled
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ubuntu user to the docker group
+      ansible.builtin.user:
+        name: ubuntu
+        groups: docker
+        append: yes
+      notify:
+        - Docker group membership notice
+
+    - name: Ensure project directory exists
+      ansible.builtin.file:
+        path: /srv/my-vps
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Clone or update the my-vps repository
+      ansible.builtin.git:
+        repo: '{{ vps_project_git_url }}'
+        dest: /srv/my-vps
+        version: main
+        force: yes
+      become: false
+
+    - name: Create .env file from template
+      ansible.builtin.template:
+        src: templates/.env.j2.example
+        dest: /srv/my-vps/.env
+        owner: ubuntu
+        group: ubuntu
+        mode: '0600'
+
+    - name: Start docker compose stack
+      community.docker.docker_compose_v2:
+        project_src: /srv/my-vps
+        state: present
+        remove_orphans: yes
+        pull: always
+
+  handlers:
+    - name: Docker group membership notice
+      ansible.builtin.debug:
+        msg: "User 'ubuntu' has been added to the docker group. A logout/login or SSH session restart might be required for changes to take full effect."
