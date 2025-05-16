@@ -72,7 +72,7 @@ This is the recommended method for deploying the stack.
     
     
     ``` Bash
-    git clone [https://github.com/mischakaufmann/my-vps.git](https://github.com/mischakaufmann/my-vps.git) # Replace with your fork if necessary
+    git clone [https://github.com/mischa-kaufmann/my-vps.git](https://github.com/mischa-kaufmann/my-vps.git) # Replace with your fork if necessary
     cd my-vps
     ```
     
@@ -145,7 +145,7 @@ If you prefer to set up the stack manually without Ansible:
     
     
     ``` Bash
-    git clone [https://github.com/mischakaufmann/my-vps.git](https://github.com/mischakaufmann/my-vps.git) # Or your fork
+    git clone [https://github.com/mischa-kaufmann/my-vps.git](https://github.com/mischa-kaufmann/my-vps.git) # Or your fork
     cd my-vps
     ```
     
